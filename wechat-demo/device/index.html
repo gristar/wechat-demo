@@ -1,0 +1,289 @@
+<!DOCTYPE html>
+<html>
+
+	<head>
+		<meta charset="utf-8">
+		<meta name="viewport" content="width=device-width, initial-scale=1,maximum-scale=1, user-scalable=no">
+		<title>数据交互</title>
+		<link rel="stylesheet" href="css/weui.min.css" />
+
+	</head>
+
+	<body>
+		<!--<div class="weui_btn_area">
+			<a class="weui_btn weui_btn_primary" href="javascript:" id="scanDevice">开始扫描智能设备</a>
+		</div>
+		<div class="weui_btn_area">
+			<a class="weui_btn weui_btn_primary" href="javascript:" id="stopScanWXDevice">停止扫描智能设备</a>
+		</div>
+		<div class="weui_btn_area">
+			<a class="weui_btn weui_btn_primary" href="javascript:" id="getDeviceInfo">获取智能设备信息</a>
+		</div>-->
+		<div class="weui_cells_title">设备列表</div>
+		<div class="weui_cells weui_cells_access" id="devices_ls">
+	        <!--<a class="weui_cell" href="javascript:;">
+	            <div class="weui_cell_bd weui_cell_primary">
+	                <p>蜗灯</p>
+	            </div>
+	            <div class="weui_cell_ft">智能灯</div>
+	        </a>-->
+	    </div>
+	    <div class="weui_cells weui_cells_form">
+			<form action="javascript:;" id="formDataNo">
+				<div class="weui_cell">
+					<div class="weui_cell_hd"><label class="weui_label">数据</label></div>
+					<div class="weui_cell_bd weui_cell_primary">
+						<input class="weui_input" name="text" type="text" placeholder="请输入任意数据">
+					</div>
+				</div>
+			</form>
+		</div>
+	    <div class="weui_btn_area">
+			<a class="weui_btn weui_btn_primary" href="javascript:" id="sendDateNo">发送（未编码）</a>
+		</div>
+		<div class="weui_cells_title">数据传送测试</div>
+		<div class="weui_cells weui_cells_form">
+			<form action="javascript:;" id="formData">
+				<div class="weui_cell">
+					<div class="weui_cell_hd"><label class="weui_label">文本</label></div>
+					<div class="weui_cell_bd weui_cell_primary">
+						<input class="weui_input" name="text" type="text" placeholder="请输入任意数据">
+					</div>
+				</div>
+				<div class="weui_cell">
+					<div class="weui_cell_hd"><label class="weui_label">数字</label></div>
+					<div class="weui_cell_bd weui_cell_primary">
+						<input class="weui_input" name="number" type="number" pattern="[0-9]*" placeholder="请输入数字">
+					</div>
+				</div>
+			</form>
+		</div>
+		<div class="weui_btn_area">
+			<a class="weui_btn weui_btn_primary" href="javascript:" id="sendDate">发送（base64编码）</a>
+		</div>
+
+		<div id="loading" class="weui_loading_toast" style="display: none;">
+			<div class="weui_mask_transparent"></div>
+			<div class="weui_toast">
+				<div class="weui_loading">
+					<div class="weui_loading_leaf weui_loading_leaf_0"></div>
+					<div class="weui_loading_leaf weui_loading_leaf_1"></div>
+					<div class="weui_loading_leaf weui_loading_leaf_2"></div>
+					<div class="weui_loading_leaf weui_loading_leaf_3"></div>
+					<div class="weui_loading_leaf weui_loading_leaf_4"></div>
+					<div class="weui_loading_leaf weui_loading_leaf_5"></div>
+					<div class="weui_loading_leaf weui_loading_leaf_6"></div>
+					<div class="weui_loading_leaf weui_loading_leaf_7"></div>
+					<div class="weui_loading_leaf weui_loading_leaf_8"></div>
+					<div class="weui_loading_leaf weui_loading_leaf_9"></div>
+					<div class="weui_loading_leaf weui_loading_leaf_10"></div>
+					<div class="weui_loading_leaf weui_loading_leaf_11"></div>
+				</div>
+				<p class="weui_toast_content">连接设备中...</p>
+			</div>
+		</div>
+		
+		<div id="history" style="width: 100%; height: 150px; bottom: 0;border: 1px solid lightgray;overflow-y: scroll;">
+			<p>操作日志：</p>
+		</div>
+
+		<script src="js/jquery.min.js"></script>
+		<script src="js/jquery.base64.js"></script>
+		<script src="http://res.wx.qq.com/open/js/jweixin-1.1.0.js"></script>
+		<script src="js/sha1.js"></script>
+		<script src="js/wechat.js"></script>
+		<script src="js/common.js"></script>
+		<script src="js/template.js"></script>
+		<script type="text/html" id="tmp-deviceinfo">
+			{{each list as device i}}
+			<a class="weui_cell" href="javascript:;" data-id="{{device.deviceId}}">
+	            <div class="weui_cell_bd weui_cell_primary">
+	                <p>蜗灯{{i+1}}(deviceId:{{device.deviceId}})</p>
+	            </div>
+	            <div class="weui_cell_ft">{{device.state}}</div>
+	        </a>
+	        {{/each}}
+		</script>
+		<script type="text/javascript">
+			//			$(".weui_btn").addClass("weui_btn_disabled");
+			$('#loading').show();
+			var signature = {
+					signature: "",
+					nonceStr: "",
+					timestamp: "",
+					appId: "wx9864d67ae5c81281"
+				},
+				deviceId,
+				//			token = getToken("wx6b57a9a939a14c30","292837a98ce17b665a92fe15926d7486"),
+				token = "PkDyDAeRWOKoNBcMKnwcOIZ6LkhYWjmPbB7wQwpn1LTeeBaZxQ3O7PslntVfOIYZYz8M4dMeA-cX3R_f7sYEQ_rfMLTzSGnFK3AOc0W7bt-ZsWveafg-nKLGHCmgGH49RYVhAFALSP",
+				//			ticket = getTicket(token);
+				ticket = "kgt8ON7yVITDhtdwci0qeewsoTYkGbMVsMnXmeCxP4kvDZABOeX3bltvTzbB1O_QW6NzuINsgh_ZU4NUaAoXVQ";
+			$.base64.utf8encode = true;
+			if (!window.btoa) window.btoa = $.base64.btoa;
+			if (!window.atob) window.atob = $.base64.atob;
+			//			signature = sign(ticket,encodeURIComponent(location.href.split("#")[0]));
+			//			signature = sign(ticket,location.href.split("#")[0]);
+			getSignature();
+			//getTicket();//调用次数有限，慎用
+			//通过config接口注入权限验证配置
+			wx.config({
+				debug: true, // 开启调试模式,调用的所有api的返回值会在客户端alert出来，若要查看传入的参数，可以在pc端打开，参数信息会通过log打出，仅在pc端时才会打印。
+				appId: signature.appId, // 必填，公众号的唯一标识
+				timestamp: signature.timestamp, // 必填，生成签名的时间戳
+				nonceStr: signature.nonceStr, // 必填，生成签名的随机串
+				signature: signature.signature, // 必填，签名
+				jsApiList: [
+					'openWXDeviceLib',
+					'closeWXDeviceLib',
+					'getWXDeviceInfos',
+					'startScanWXDevice',
+					'stopScanWXDevice',
+					'connectWXDevice',
+					'disconnectWXDevice',
+					'sendDataToWXDevice'
+				]
+			});
+			/**
+			 * config 失败
+			 */
+			wx.error(function(res) {
+				console.log(res);
+			});
+			/**
+			 * config 完成后绑定各种事件
+			 */
+			wx.ready(function() {
+				//初始化库
+				WeixinJSBridge.invoke('openWXDeviceLib', {}, function(res) {
+					if (res.err_msg != 'openWXDeviceLib:ok') {
+						alert('加载失败，请重新打开页面');
+						return;
+					}
+				});
+				getUserDevices();
+				//设备状态改变
+				WeixinJSBridge.on('onWXDeviceStateChange', function(argv) {
+					console.log("onWXDeviceStateChange", argv);
+					var old = deviceslist[argv.deviceId].state;
+					var active = false;
+					//断开连接
+					if (old == 'connected' & argv.state != old) {
+						if (active) {
+							//当前灯
+							alert("断开连接");
+							$("#history").append("断开连接<br/>");
+						} else {
+							//非当前
+							alert("未连接");
+							$("#history").append("未连接<br/>");
+						}
+					}
+					//重连
+					if (old != 'connected' & argv.state == 'connected') {
+						if (active) {
+							alert("重连");
+							$("#history").append("重连<br/>");
+						} else {
+							alert("已连接");
+							$("#history").append("已连接<br/>");
+						}
+					}
+				});
+				//监听设备消息
+				WeixinJSBridge.on('onReceiveDataFromWXDevice', function(argv) {
+					console.log("onReceiveDataFromWXDevice", argv);
+					var device_id = argv.deviceId;
+					//微信发来的原始数据
+					var data = argv.base64Data;
+					alert("接收消息：" + data + "，设备id：" + device_id);
+					$("#history").append("接收消息：" + data + "，设备id：" + device_id + "<br/>");
+				});
+				//监听蓝牙状态
+				WeixinJSBridge.on('onWXDeviceBluetoothStateChange', function(argv) {
+					console.log("onWXDeviceBluetoothStateChange", argv);
+					if (argv.state === 'off') {
+						alert('蓝牙关闭，设备断开连接');
+					}
+				});
+			});
+			
+			/*$("#devices_ls").on("click","a",function(){
+				var dId = $(this).data("id");
+				alert("开始连接devicesId为：" + dId + "的设备");
+				WeixinJSBridge.invoke('connectWXDevice', {deviceId:dId}, function(res) {
+					if (res.err_msg == 'connectWXDevice:ok') {
+						alert('连接成功');
+						$("#history").append("连接成功</br>");
+					}
+					else{
+						alert('连接失败');
+						$("#history").append("连接失败</br>");
+					}
+					getUserDevices();
+				});
+			})*/
+			
+			$("#sendDate").on("click",function(){
+				var deviceId = $("#devices_ls a:last-child").data("id");
+				if(!deviceId){
+					alert("无设备，请先绑定设备");
+					$("#history").append("无设备，请先绑定设备</br>");
+					return false;
+				}
+				var data = "";
+				$("form#formData input").each(function(i,v){
+					var str = $(this).prop("name")+"="+$(this).val() + "&";
+					data += str;
+				})
+				var base64Data = $.base64.btoa(data.slice(0,-1));
+//				alert("发送数据中,data:" + base64Data + "，deviceId:" + deviceId);
+				$("#history").append("发送数据中,base64Data:" + base64Data + "，deviceId:" + deviceId + "</br>");
+				sendDataToWXDevice(deviceId,base64Data);
+			})
+			$("#sendDateNo").on("click",function(){
+				var deviceId = $("#devices_ls a:last-child").data("id");
+				if(!deviceId){
+					alert("无设备，请先绑定设备");
+					$("#history").append("无设备，请先绑定设备</br>");
+					return false;
+				}
+				var data = $("form#formDataNo input").val();
+				$("#history").append("发送数据中,data:" + data + "，deviceId:" + deviceId + "</br>");
+				sendDataToWXDevice(deviceId,data);
+			})
+			function getUserDevices(){
+				//获取用户绑定设备并更新列表
+				WeixinJSBridge.invoke('getWXDeviceInfos', {}, function(res) {
+					$("#devices_ls").empty();
+					if (res.err_msg != 'getWXDeviceInfos:ok') {
+						alert(res.err_msg);
+						$("#history").append("连接失败"+res.err_msg+"</br>");
+					}
+					console.log("getWXDeviceInfos",res);
+					var num = res.deviceInfos.length;
+					if (num < 1) {
+						$("#devices_ls").html("您没有绑定设备");
+						alert("您没有绑定设备");
+						$("#history").append("您没有绑定设备</br>");
+					} else {
+						alert("绑定了：" + num + "个设备");
+						var html = template('tmp-deviceinfo', {list:res.deviceInfos});
+						$("#devices_ls").append(html);
+					}
+					//结束加载
+					$('#loading').hide();
+				});
+			}
+			
+			//发送数据
+		    function sendDataToWXDevice(deviceId, buf) {
+		        var _data = {"deviceId": deviceId, "base64Data": buf};
+		        WeixinJSBridge.invoke('sendDataToWXDevice', _data, function (res) {
+		            var str='send:'+buf+res.err_msg;
+		            console.log(str);
+		        });
+		    }
+		</script>
+	</body>
+
+</html>

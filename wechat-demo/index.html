@@ -1,0 +1,117 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<meta charset="utf-8">
+		<meta name="viewport" content="width=device-width, initial-scale=1,maximum-scale=1, user-scalable=no">
+		<title></title>
+		<link rel="stylesheet" href="css/weui.min.css" />
+		
+	</head>
+	<body>
+		<div class="weui_btn_area">
+	        <a class="weui_btn weui_btn_primary" href="javascript:" id="scanDevice">开启扫描设备</a>
+	    </div>
+	    <div class="weui_btn_area">
+	        <a class="weui_btn weui_btn_primary" href="javascript:" id="getDeviceInfo">获取设备信息</a>
+	    </div>
+	    <div class="weui_btn_area">
+	        <a class="weui_btn weui_btn_primary" href="javascript:" id="scanQrcode">开启扫描二维码</a>
+	    </div>
+		<div class="weui_cells_title">数据传送测试</div>
+		<div class="weui_cells weui_cells_form">
+			<form action="javascript:;">
+		        <div class="weui_cell">
+		            <div class="weui_cell_hd"><label class="weui_label">文本</label></div>
+		            <div class="weui_cell_bd weui_cell_primary">
+		                <input class="weui_input" name="text" type="text" placeholder="请输入任意数据">
+		            </div>
+		        </div>
+		        <div class="weui_cell">
+		            <div class="weui_cell_hd"><label class="weui_label">数字</label></div>
+		            <div class="weui_cell_bd weui_cell_primary">
+		                <input class="weui_input" name="number" type="number" pattern="[0-9]*"  placeholder="请输入数字">
+		            </div>
+		        </div>
+	        </form>
+	    </div>
+	    <div class="weui_btn_area">
+	        <a class="weui_btn weui_btn_primary" href="javascript:" id="sendDate">发送数据</a>
+	    </div>
+		<script src="js/jquery.min.js"></script>
+		<script src="js/jquery.base64.js"></script>
+		<script src="http://res.wx.qq.com/open/js/jweixin-1.0.0.js"></script>
+		<script src="js/sha1.js"></script>
+		<script src="js/wechat.js" ></script>
+		<script src="js/common.js"></script>
+		<script type="text/javascript">
+			var appId = 'wx2d65e373e33947fc';//讯音
+			appId = "wx9864d67ae5c81281";//快线
+			var signature = {signature:"",nonceStr:"",timestamp:""};
+			var deviceId;
+			$.base64.utf8encode = true;
+			if (!window.btoa) window.btoa = $.base64.btoa;
+			if (!window.atob) window.atob = $.base64.atob;
+			getSignature();
+			//通过config接口注入权限验证配置
+			wx.config({
+			    debug: true, // 开启调试模式,调用的所有api的返回值会在客户端alert出来，若要查看传入的参数，可以在pc端打开，参数信息会通过log打出，仅在pc端时才会打印。
+			    appId: appId, // 必填，公众号的唯一标识
+			    timestamp: signature.timestamp, // 必填，生成签名的时间戳
+			    nonceStr: signature.nonceStr, // 必填，生成签名的随机串
+			    signature: signature.signature,// 必填，签名
+			    jsApiList: [
+		            'openWXDeviceLib',
+		            'closeWXDeviceLib',
+		            'getWXDeviceInfos',
+		            'startScanWXDevice',
+		            'stopScanWXDevice',
+		            'connectWXDevice',
+		            'disconnectWXDevice',
+		            'sendDataToWXDevice',
+		            'scanQRCode'
+		        ]
+			});
+			/**
+		     * config 失败
+		     */
+		    wx.error(function (res) {
+		        console.log(res);
+		    });
+			//通过ready接口处理成功验证
+			wx.ready(function(){
+				// config信息验证后会执行ready方法，所有接口调用都必须在config接口获得结果之后
+				WeixinJSBridge.invoke('openWXDeviceLib', {'connType':'lan'}, function(res) {
+					console.log('openWXDeviceLib',res);
+				});
+				$("#scanQrcode").on("click",function(){
+					wx.scanQRCode({
+					    needResult: 0, // 默认为0，扫描结果由微信处理，1则直接返回扫描结果，
+					    scanType: ["qrCode","barCode"], // 可以指定扫二维码还是一维码，默认二者都有
+					    success: function (res) {
+					    	var result = res.resultStr; // 当needResult 为 1 时，扫码返回的结果
+						}
+					});
+				})
+				$("#sendDate").on("click",function(){
+					var data = "";
+					$("form input").each(function(i,v){
+						var str = $(this).prop("name")+"="+$(this).val() + "&";
+						data += str;
+					})
+					console.log(data.slice(0,-1));
+					var base64Data = $.base64.btoa(data.slice(0,-1));
+					WeixinJSBridge.invoke('sendDataToWXDevice', {'deviceId':deviceId, 'connType':'lan', 'base64Data':base64Data}, function(res) {
+						console.log('sendDataToWXDevice',res);
+					});
+				})
+				$("#getDeviceInfo").on("click",function(){
+					WeixinJSBridge.invoke('getWXDeviceInfos', {'connType':'lan'}, function(res) {
+						console.log('getWXDeviceInfos',res);
+						deviceId = res.deviceInfos[0].deviceId;
+					});
+				})
+			});
+			
+		</script>
+	</body>
+</html>

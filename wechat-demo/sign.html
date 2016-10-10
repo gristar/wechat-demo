@@ -1,0 +1,286 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<meta charset="utf-8">
+		<meta name="viewport" content="width=device-width, initial-scale=1,maximum-scale=1, user-scalable=no">
+		<title>微信sdk</title>
+		<link rel="stylesheet" href="css/weui.min.css" />
+		
+	</head>
+	<body>
+		<div class="weui_btn_area">
+	        <a class="weui_btn weui_btn_primary " href="javascript:" id="scanQrcode">开启扫描二维码</a>
+	    </div>
+	    <div class="weui_btn_area">
+	        <a class="weui_btn weui_btn_primary" href="javascript:" id="openLocation">查看当前位置</a>
+	    </div>
+	    <div class="weui_btn_area">
+	        <a class="weui_btn weui_btn_primary" href="javascript:" id="uploadImage">上传图片</a>
+	    </div>
+	    <div class="weui_btn_area">
+	        <a class="weui_btn weui_btn_primary" href="javascript:" id="startRecord">录音</a>
+	    </div>
+	     <div class="weui_btn_area">
+	        <a class="weui_btn weui_btn_primary" href="javascript:" id="stopRecord">停止录音并播放</a>
+	    </div>
+	    <div class="weui_btn_area">
+	        <a class="weui_btn weui_btn_primary" href="javascript:" id="startSearchBeacons">摇一摇</a>
+	    </div>
+	    <div class="weui_btn_area">
+	        <a class="weui_btn weui_btn_primary" href="javascript:" id="chooseWXPay">微信支付</a>
+	    </div>
+		<div class="weui_btn_area">
+	        <a class="weui_btn weui_btn_primary" href="javascript:" id="scanDevice">开始扫描智能设备</a>
+	    </div>
+	    <div class="weui_btn_area">
+	        <a class="weui_btn weui_btn_primary" href="javascript:" id="stopScanWXDevice">停止扫描智能设备</a>
+	    </div>
+	    <div class="weui_btn_area">
+	        <a class="weui_btn weui_btn_primary" href="javascript:" id="getDeviceInfo">获取智能设备信息</a>
+	    </div>
+		<div class="weui_cells_title">数据传送测试</div>
+		<div class="weui_cells weui_cells_form">
+			<form action="javascript:;">
+		        <div class="weui_cell">
+		            <div class="weui_cell_hd"><label class="weui_label">文本</label></div>
+		            <div class="weui_cell_bd weui_cell_primary">
+		                <input class="weui_input" name="text" type="text" placeholder="请输入任意数据">
+		            </div>
+		        </div>
+		        <div class="weui_cell">
+		            <div class="weui_cell_hd"><label class="weui_label">数字</label></div>
+		            <div class="weui_cell_bd weui_cell_primary">
+		                <input class="weui_input" name="number" type="number" pattern="[0-9]*"  placeholder="请输入数字">
+		            </div>
+		        </div>
+	        </form>
+	    </div>
+	    <div class="weui_btn_area">
+	        <a class="weui_btn weui_btn_primary" href="javascript:" id="sendDate">发送数据到智能设备</a>
+	    </div>
+	    
+	    <div id="loading" class="weui_loading_toast" style="display: none;">
+		    <div class="weui_mask_transparent"></div>
+		    <div class="weui_toast">
+		        <div class="weui_loading">
+		            <div class="weui_loading_leaf weui_loading_leaf_0"></div>
+		            <div class="weui_loading_leaf weui_loading_leaf_1"></div>
+		            <div class="weui_loading_leaf weui_loading_leaf_2"></div>
+		            <div class="weui_loading_leaf weui_loading_leaf_3"></div>
+		            <div class="weui_loading_leaf weui_loading_leaf_4"></div>
+		            <div class="weui_loading_leaf weui_loading_leaf_5"></div>
+		            <div class="weui_loading_leaf weui_loading_leaf_6"></div>
+		            <div class="weui_loading_leaf weui_loading_leaf_7"></div>
+		            <div class="weui_loading_leaf weui_loading_leaf_8"></div>
+		            <div class="weui_loading_leaf weui_loading_leaf_9"></div>
+		            <div class="weui_loading_leaf weui_loading_leaf_10"></div>
+		            <div class="weui_loading_leaf weui_loading_leaf_11"></div>
+		        </div>
+		        <p class="weui_toast_content">功能加载中...</p>
+		    </div>
+		</div>
+	    
+	    <div class="weui_dialog_confirm" id="dialog-imgs" style="display: none;">
+		    <div class="weui_mask"></div>
+		    <div class="weui_dialog">
+		        <div class="weui_dialog_hd"><strong class="weui_dialog_title">提示</strong></div>
+		        <div class="weui_dialog_bd">选择的图片</div>
+		        <div id="u-imgs"></div>
+		        <div class="weui_dialog_ft">
+		            <a href="#" class="weui_btn_dialog default">取消</a>
+		            <a href="#" class="weui_btn_dialog primary">确定</a>
+		        </div>
+		    </div>
+		</div>
+		<script src="js/jquery.min.js"></script>
+		<script src="js/jquery.base64.js"></script>
+		<script src="http://res.wx.qq.com/open/js/jweixin-1.1.0.js"></script>
+		<script src="js/sha1.js"></script>
+		<script src="js/wechat.js" ></script>
+		<script src="js/common.js"></script>
+		<script type="text/javascript">
+//			$(".weui_btn").addClass("weui_btn_disabled");
+			$('#loading').show();
+			var signature = {signature:"",nonceStr:"",timestamp:"",appId:"wx9864d67ae5c81281"},
+			deviceId,
+//			token = getToken("wx6b57a9a939a14c30","292837a98ce17b665a92fe15926d7486"),
+			token = "PkDyDAeRWOKoNBcMKnwcOIZ6LkhYWjmPbB7wQwpn1LTeeBaZxQ3O7PslntVfOIYZYz8M4dMeA-cX3R_f7sYEQ_rfMLTzSGnFK3AOc0W7bt-ZsWveafg-nKLGHCmgGH49RYVhAFALSP",
+//			ticket = getTicket(token);
+			ticket = "kgt8ON7yVITDhtdwci0qeewsoTYkGbMVsMnXmeCxP4kvDZABOeX3bltvTzbB1O_QW6NzuINsgh_ZU4NUaAoXVQ";
+			$.base64.utf8encode = true;
+			if (!window.btoa) window.btoa = $.base64.btoa;
+			if (!window.atob) window.atob = $.base64.atob;
+//			signature = sign(ticket,encodeURIComponent(location.href.split("#")[0]));
+//			signature = sign(ticket,location.href.split("#")[0]);
+			getSignature();
+			//getTicket();//调用次数有限，慎用
+			//通过config接口注入权限验证配置
+			wx.config({
+			    debug: true, // 开启调试模式,调用的所有api的返回值会在客户端alert出来，若要查看传入的参数，可以在pc端打开，参数信息会通过log打出，仅在pc端时才会打印。
+			    appId: signature.appId, // 必填，公众号的唯一标识
+			    timestamp: signature.timestamp, // 必填，生成签名的时间戳
+			    nonceStr: signature.nonceStr, // 必填，生成签名的随机串
+			    signature: signature.signature,// 必填，签名
+			    jsApiList: [
+		            'openWXDeviceLib',
+		            'closeWXDeviceLib',
+		            'getWXDeviceInfos',
+		            'startScanWXDevice',
+		            'stopScanWXDevice',
+		            'connectWXDevice',
+		            'disconnectWXDevice',
+		            'sendDataToWXDevice',
+		            'scanQRCode',
+		            'openLocation',
+		            'getLocation',
+		            'chooseImage',
+		            'previewImage',
+		            'uploadImage',
+		            'downloadImage',
+		            'startRecord',
+		            'stopRecord',
+		            'onVoiceRecordEnd',
+		            'playVoice',
+		            'pauseVoice',
+		            'stopVoice',
+		            'onVoicePlayEnd',
+		            'startSearchBeacons',
+		            'chooseWXPay'
+		        ]
+			});
+			/**
+		     * config 失败
+		     */
+		    wx.error(function (res) {
+		        console.log(res);
+		    });
+			//通过ready接口处理成功验证
+			wx.ready(function(){
+				$('#loading').hide();
+//				$(".weui_btn").removeClass("weui_btn_disabled");
+				// config信息验证后会执行ready方法，所有接口调用都必须在config接口获得结果之后
+				WeixinJSBridge.invoke('openWXDeviceLib', {'connType':'lan'}, function(res) {
+					console.log('openWXDeviceLib',res);
+				});
+				$("#scanQrcode").on("click",function(){
+					wx.scanQRCode({
+					    needResult: 0, // 默认为0，扫描结果由微信处理，1则直接返回扫描结果，
+					    scanType: ["qrCode","barCode"], // 可以指定扫二维码还是一维码，默认二者都有
+					    success: function (res) {
+					    	var result = res.resultStr; // 当needResult 为 1 时，扫码返回的结果
+						}
+					});
+				})
+				$("#openLocation").on("click",function(){
+					wx.getLocation({
+					    type: 'wgs84', // 默认为wgs84的gps坐标，如果要返回直接给openLocation用的火星坐标，可传入'gcj02'
+					    success: function (res) {
+					        var latitude = res.latitude; // 纬度，浮点数，范围为90 ~ -90
+					        var longitude = res.longitude; // 经度，浮点数，范围为180 ~ -180。
+					        var speed = res.speed; // 速度，以米/每秒计
+					        var accuracy = res.accuracy; // 位置精度
+					        
+					        wx.openLocation({
+							    latitude: latitude, // 纬度，浮点数，范围为90 ~ -90
+							    longitude: longitude, // 经度，浮点数，范围为180 ~ -180。
+							    name: '', // 位置名
+							    address: '', // 地址详情说明
+							    scale: 27, // 地图缩放级别,整形值,范围从1~28。默认为最大
+							    infoUrl: '' // 在查看位置界面底部显示的超链接,可点击跳转
+							});
+					    }
+					});
+				})
+				$("#uploadImage").on("click",function(){
+					wx.chooseImage({
+					    count: 6, // 默认9
+					    sizeType: ['original', 'compressed'], // 可以指定是原图还是压缩图，默认二者都有
+					    sourceType: ['album', 'camera'], // 可以指定来源是相册还是相机，默认二者都有
+					    success: function (res) {
+					        var localIds = res.localIds; // 返回选定照片的本地ID列表，localId可以作为img标签的src属性显示图片
+					        $.each(localIds, function(i,src) {
+					        	$("#u-imgs").append('<img src="'+src+'" width="80" height="80"/>');
+					        });
+					        $('#dialog-imgs').show().on('click', '.weui_btn_dialog', function () {
+					        	$("#u-imgs").empty();
+			                    $('#dialog-imgs').off('click').hide();
+			                });
+					    }
+					});
+				})
+				$("#startRecord").on("click",function(){
+					wx.startRecord();
+				})	
+				$("#stopRecord").on("click",function(){
+					wx.stopRecord({
+					    success: function (res) {
+					        var localId = res.localId;
+					        wx.playVoice({
+							    localId: localId // 需要播放的音频的本地ID，由stopRecord接口获得
+							});
+					    }
+					});
+					/*wx.onVoiceRecordEnd({
+					    // 录音时间超过一分钟没有停止的时候会执行 complete 回调
+					    complete: function (res) {
+					        var localId = res.localId; 
+					    }
+					});*/
+					
+				})	
+				$("#startSearchBeacons").on("click",function(){
+					wx.startSearchBeacons({
+						ticket:ticket,  //摇周边的业务ticket, 系统自动添加在摇出来的页面链接后面
+						complete:function(argv){
+							//开启查找完成后的回调函数
+						}
+					});
+				})	
+				$("#chooseWXPay").on("click",function(){
+					wx.chooseWXPay({
+					    timestamp: createTimestamp(), // 支付签名时间戳，注意微信jssdk中的所有使用timestamp字段均为小写。但最新版的支付后台生成签名使用的timeStamp字段名需大写其中的S字符
+					    nonceStr: createNonceStr(), // 支付签名随机串，不长于 32 位
+					    package: '', // 统一支付接口返回的prepay_id参数值，提交格式如：prepay_id=***）
+					    signType: 'MD5', // 签名方式，默认为'SHA1'，使用新版支付需传入'MD5'
+					    paySign: '', // 支付签名
+					    success: function (res) {
+					        // 支付成功后的回调函数
+					    }
+					});
+				})
+				$("#scanDevice").on("click",function(){
+					console.log("scanDevice");
+					WeixinJSBridge.invoke('startScanWXDevice', {'connType':'lan'}, function(res) {
+						console.log('startScanWXDevice',res);
+					});
+				})
+				$("#stopScanWXDevice").on("click",function(){
+					console.log("stopScanWXDevice");
+					WeixinJSBridge.invoke('stopScanWXDevice', {'connType':'lan'}, function(res) {
+						console.log('stopScanWXDevice',res);
+					});
+				})
+				$("#sendDate").on("click",function(){
+					var data = "";
+					$("form input").each(function(i,v){
+						var str = $(this).prop("name")+"="+$(this).val() + "&";
+						data += str;
+					})
+					console.log(data.slice(0,-1));
+					var base64Data = $.base64.btoa(data.slice(0,-1));
+					WeixinJSBridge.invoke('sendDataToWXDevice', {'deviceId':deviceId, 'connType':'lan', 'base64Data':base64Data}, function(res) {
+						console.log('sendDataToWXDevice',res);
+					});
+				})
+				$("#getDeviceInfo").on("click",function(){
+					console.log("getDeviceInfo");
+					WeixinJSBridge.invoke('getWXDeviceInfos', {'connType':'lan'}, function(res) {
+						console.log('getWXDeviceInfos',res);
+						deviceId = res.deviceInfos[0].deviceId;
+					});
+				})
+			});
+			
+		</script>
+	</body>
+</html>

@@ -1,0 +1,20 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<meta charset="UTF-8">
+		<title></title>
+	</head>
+	<script type="text/javascript" src="js/jquery.min.js" ></script>
+	<script type="text/javascript" src="js/jquery.base64.js" ></script>
+	<body>
+		输入测试字符：<input />
+		<br />
+		结果：
+		<p id="show"></p>
+	</body>
+	<script type="text/javascript">
+		$("input").on("keyup",function(){
+			$("#show").text($.base64.btoa($("input").val()));
+		})
+	</script>
+</html>

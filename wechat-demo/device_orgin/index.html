@@ -1,0 +1,983 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1,user-scalable=no" >
+    <title>蜗灯连接</title>
+    <link rel="stylesheet" type="text/css" href="css/bootstrap.css">
+    <link rel="stylesheet" type="text/css" href="css/common.css">
+    <!--        <script src="http://libs.baidu.com/jquery/1.11.1/jquery.min.js"></script>-->
+    <script src="js/jquery-1.10.2.min.js"></script>
+
+    <script src="js/bootstrap.js"></script>
+    <script src="js/function.js"></script>
+    <script src="js/jquery.knob.js"></script>
+
+</head>
+<body>
+<div class="back" >
+    <img src="image/背景.jpg" class="img-responsive" style="height: 100%;width: 100%;"alt=''>
+</div>
+<div class="load">
+    <div class="line-scale-party">
+        <div></div>
+        <div></div>
+        <div></div>
+        <div></div>
+    </div>
+    <p class="center" id="load-text">正在连接</p>
+</div>
+<div class="container hidden" >
+    <!-- 操作区域 -->
+    <div class="row">
+        <div class="col-xs-12">
+            <div class="row">
+                <div class="col-xs-10">
+                </div>
+                <div class="col-xs-2">
+                    <!-- 多灯列表按钮 -->
+                    <div class="list-menu ">
+                        <img src="image/菜单.png" class="img-responsive hidden" id="list-btn">
+                    </div>
+                </div>
+            </div>
+
+            <!-- 亮度调节 -->
+            <div class="row">
+                <div class="col-xs-12">
+                    <div id="circle">
+                        <div id="small_circle_div">
+
+                        </div>
+
+                        <div class='center-block' id="change-light-knop">
+
+                            <input class="change-light" disabled data-angleOffset=-125 data-angleArc=250 data-fgColor="#ffffff" data-bgcolor=rgba(255,255,255,0.3) data-linecap=round  data-thickness=".05" value="35" data-min="1" id="change-light" >
+                            <div class="row">
+                                <div class="col-xs-6">
+                                    <p class="text-center light-text">&nbsp&nbsp1%</p>
+                                </div>
+                                <div class="col-xs-6">
+                                    <p class="text-center light-text">100%</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+
+                </div>
+            </div>
+            <!-- 控制按钮 -->
+
+            <nav class="navbar  navbar-fixed-bottom">
+                <div class="row">
+                    <div class="col-xs-12">
+                        <p class="text-center delay-text hidden">15分钟后关灯</p>
+                    </div>
+                </div>
+                <div class="container-fiuld">
+                    <!-- 倒计时 -->
+
+                    <div class="control-panel">
+                        <div class="row">
+                            <div class="col-xs-3">
+                                <div class="switch-switch">
+                                    <img src="image/开关灯.png" class="img-responsive center" alt="" >
+                                </div>
+                                <p class="text-center" id="switch-switch">开灯</p>
+                            </div>
+                            <div class="col-xs-3">
+                                <div class="switch-light">
+                                    <img src="image/亮度选中.png" class="img-responsive center" alt="" >
+                                </div>
+                                <p class="text-center" id="switch-light">亮度</p>
+                            </div>
+
+                            <div class="col-xs-3">
+                                <div id="switch-delay">
+                                    <img src="image/延时不可点.png" class="img-responsive center" alt="" >
+                                </div>
+
+                                <p class="text-center">延时关灯</p>
+                            </div>
+                            <div class="col-xs-3">
+                                <div id="switch-data">
+                                    <img src="image/数据不可点.png" class="img-responsive center" alt="" onclick="getchart();" >
+                                </div>
+
+                                <p class="text-center">数据</p>
+                            </div>
+                        </div>
+
+                    </div>
+                </div>
+            </nav>
+
+        </div>
+    </div>
+    <!-- 灯列表 -->
+    <!-- Modal -->
+    <div class="modal fade" id="light-list-modal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel">
+        <div class="modal-dialog" role="document">
+            <div class="modal-content">
+                <div class="row">
+                    <div class="col-xs-12">
+                        <div class="row">
+                            <div class="col-xs-10">
+                            </div>
+                            <div class="col-xs-2">
+                                <!-- 多灯列表按钮 -->
+                                <div class="list-menu ">
+                                    <img src="image/关闭.png" style="z-index: 100;" data-dismiss="modal" class="img-responsive">
+                                </div>
+                            </div>
+                        </div>
+                        <br>
+                        <br>
+                        <hr>
+                        <div id="devices_list">
+                        </div>
+
+                    </div>
+
+                </div>
+
+            </div>
+        </div>
+    </div>
+</div>
+<div id="chart-view" style="position: absolute;top: 0px;left: 0px;display:none; background-color: #FFFFFF;width: 100%">
+    <div id="color_type" style="height:400px;width: 100%;"></div>
+    <div id="color_temp" style="height:400px;width: 100%;"></div>
+    <div id="model" style="height:400px;width: 100%;"></div>
+    <br>
+    <br>
+    <br>
+    <br>
+    <br>
+    <br>
+</div>
+<script src="http://res.wx.qq.com/open/js/jweixin-1.0.0.js"></script>
+<script src="js/echarts.js"></script>
+<script type="text/javascript">
+    require.config({
+        paths: {
+            echarts: 'js/echart'
+        }
+    });
+
+</script>
+<script type="text/javascript">
+
+    var alertstring='get:';
+    //发送消息队列
+    var queue=new Array();
+    var retrytime=0;
+    var _height=$(window).height();
+    var _width=$(window).width();
+    $(".back").css("height",_height);
+    var nav_height=$(".navbar").height();
+    $("#change-light-knop").css("margin-top",(_height-nav_height)*0.2);
+    var deviceslist = new Array();
+    var active_device_id = "";
+    var active_device_state = "";
+    var active_device_light = "50";
+    var active_device_name = "Yeelight床头灯";
+    var active_device_switch = 2; //开关，默认关灯 1-on,2-off
+    var active_device_delay = 0; // 延时关灯，默认关闭 1-on,0/2-off
+    var active_device_delay_time = 15; // 延时关灯时间，默认15
+    var device_num = 0;
+    var timer = {};
+    var get_chart_url = 'http://weixin-yeelink.mi-ae.com.cn/index.php?s=Home/index/get_chart';
+    var signData = {
+        "verifyAppId": 'wx196d136af4b7adab',
+        "verifyTimestamp": '1474439159',
+        "verifySignType": "sha1",
+//签名字符串
+        "verifyNonceStr": 'L6Mt7CFzUNru5y9k',
+        "verifySignature": 'a539caa6a585d5c6f2e8a3ae117626c3f3259c1f'
+    };
+    wx.config({
+        debug: false,
+        appId: 'wx196d136af4b7adab',
+        timestamp: '1474439159',
+        nonceStr: 'L6Mt7CFzUNru5y9k',
+        signature: 'a539caa6a585d5c6f2e8a3ae117626c3f3259c1f',
+        jsApiList: [
+            'openWXDeviceLib',
+            'closeWXDeviceLib',
+            'getWXDeviceInfos',
+            'startScanWXDevice',
+            'stopScanWXDevice',
+            'connectWXDevice',
+            'disconnectWXDevice',
+            'sendDataToWXDevice'
+        ]
+    });
+    /**
+     * config 失败
+     */
+    wx.error(function (res) {
+        show_error("加载失败，请重新打开页面");
+    });
+
+    /**
+     * config 完成后绑定各种事件
+     */
+    wx.ready(function () {
+        //初始化库
+        WeixinJSBridge.invoke('openWXDeviceLib', {}, function (res) {
+            if (res.err_msg != 'openWXDeviceLib:ok') {
+                show_error('加载失败，请重新打开页面');
+                return;
+            }
+        });
+        //获取用户绑定设备并更新列表
+        get_user_devices();
+
+        //设备状态改变
+        WeixinJSBridge.on('onWXDeviceStateChange', function (argv) {
+            var old = deviceslist[argv.deviceId].state;
+            var active = false;
+            var device_name = get_name(argv.deviceId);
+            //更新状态
+            deviceslist[argv.deviceId].state = argv.state;
+            if (active_device_id == '') {
+                //之前都没有连上
+                //设为当前灯
+                active_device_id = argv.deviceId;
+                active_device_state = argv.state;
+                active = true;
+            }
+            if (argv.deviceId == active_device_id) {
+                //当前使用的灯
+                active_device_state = argv.state;
+                active = true;
+            }
+            //断开连接
+            if (old == 'connected' & argv.state != old) {
+                if (active) {
+                    //当前灯
+                    show_error('设备断开连接,正在尝试重连......');
+                } else {
+                    //非当前
+                    var html = '<div><span id="' + argv.deviceId + '">' + device_name + '</span>&nbsp<span class="label label-default">未连接</span></div>';
+                    $("#"+argv.deviceId).parents("h5").html(html);
+                }
+            }
+            //重连
+            if (old != 'connected' & argv.state == 'connected') {
+                if (active) {
+                    send_get_name(argv.deviceId);
+                    $(".load").hide();
+                    open_main();
+                } else {
+                    var html = '<div onclick="show_device(this)" value="' + argv.deviceId + '"><span id="' + argv.deviceId + '">' + device_name + '</span>&nbsp<span class="label label-success">已连接</span></div>';
+                    $("#"+argv.deviceId).parents("h5").html(html);
+                }
+            }
+        });
+        //监听设备消息
+        WeixinJSBridge.on('onReceiveDataFromWXDevice', function (argv) {
+            var device_id = argv.deviceId;
+            //微信发来的原始数据
+            var data = argv.base64Data;
+            //base64解码后的数据
+            var b64d = base64_decode(data);
+            var value = stringToHex(b64d);
+            alertstring+=value;
+            var arr = value.split(",");
+            //提取指令
+            var len = arr.length;
+            var order_data = new Array();
+            var a=0;
+            for (var i = 0; i < len; i++) {
+                //收到名字
+                if (arr[i] === '43' & arr[i + 1] === '53') {
+                    //返回名字
+                    len = i + 15;
+                    for (a = i + 2; a < len; a++) {
+                        order_data[a - i - 2] = arr[a];
+                    }
+                    do_order_name(device_id, order_data);
+                    break;
+                }
+                //收到灯状态
+                if (arr[i] === '43' & arr[i + 1] === '45') {
+                    len = i + 13;
+                    for (a = i + 2; a < len; a++) {
+                        order_data[a - i - 2] = arr[a];
+                    }
+                    do_get_state(device_id, order_data);
+                    break;
+                }
+                //收到延时关灯状态
+                if (arr[i] === '43' & arr[i + 1] === '81') {
+                    len = i + 7;
+                    for (a = i + 2; a < len; a++) {
+                        order_data[a - i - 2] = arr[a];
+                    }
+                    do_get_timing(device_id, order_data);
+                    break;
+                }
+            }
+        });
+        //监听蓝牙状态
+        WeixinJSBridge.on('onWXDeviceBluetoothStateChange', function (argv) {
+            if (argv.state === 'off') {
+                show_error('蓝牙关闭，设备断开连接');
+            }
+        });
+    });
+
+    //处理获得延时关灯状态
+    function do_get_timing(device_id, order_data) {
+        //console.log("do_get_timing",device_id);
+        var len=order_data.length;
+        if(deviceslist[device_id].timing_timer !=1){
+            return;
+        }
+        var time=parseInt(order_data[1],16);
+        if(time > 60 || time < 1){
+            time=15;
+        }
+        var data = order_data[2];
+        var state = 0;
+        if (data == 1) {
+            state = 1;
+        }
+        if (typeof (deviceslist[device_id]) === "undefined") {
+            deviceslist[device_id] = new Object();
+        }
+        deviceslist[device_id].delay = state;
+        deviceslist[device_id].delay_time = time;
+        if (active_device_id == device_id) {
+            active_device_delay = state;
+            active_device_delay_time = time;
+            open_main();
+            if(state==1){
+                var left='';
+                left=order_data[3]+order_data[4];
+                var minit=Math.round(parseInt(left,16)/60);
+
+                $(".delay-text").html(minit+'分钟后关灯');
+                $(".delay-text").removeClass('hidden');
+                $(".delay-text").show();
+                setTimeout(function () {
+                    $(".delay-text").hide();
+                }, 10000);
+            }
+        }
+        deviceslist[device_id].timing_timer=0;
+        send_get_name(device_id);
+    }
+    //处理获得的灯状态
+    function do_get_state(device_id, order_data) {
+        //console.log("do_get_state",device_id);
+        var power_state = order_data[0];
+        var light = parseInt(order_data[6], 16);
+        if (typeof (deviceslist[device_id]) === "undefined") {
+            deviceslist[device_id] = new Object();
+        }
+        if(power_state==1){
+            deviceslist[device_id].light = light;
+        }
+        deviceslist[device_id].switch = power_state;
+        if (active_device_id == device_id) {
+            if(active_device_light!=light || active_device_switch!=power_state){
+                if(power_state==1){
+                    active_device_light = light;
+                }else{
+                    if(active_device_delay==1){
+                        active_device_delay=0;
+                    }
+                }
+                active_device_switch = power_state;
+                open_main();
+            }
+
+        }
+        deviceslist[device_id].state_timer=0;
+        if(deviceslist[device_id].flag==true){
+            send_get_timing(device_id);
+            deviceslist[device_id].flag=false;
+        }
+    }
+    function get_user_devices() {
+        //获取用户绑定设备
+        WeixinJSBridge.invoke('getWXDeviceInfos', {}, function (res) {
+            if (res.err_msg != 'getWXDeviceInfos:ok') {
+                alert(res.err_msg);
+                show_error('获取信息失败，请刷新页面');
+            }
+            //console.log("getWXDeviceInfos",res);
+            var num = res.deviceInfos.length;
+            $("#devices_list").html('');
+            if (num < 1) {
+                return 0;
+            }
+            for (var i = 0; i < num; i++) {
+                var deviceid = res.deviceInfos[i].deviceId;
+                var state = res.deviceInfos[i].state;
+                var info = deviceid + ':' + state;
+                if (typeof (deviceslist[deviceid]) === "undefined") {
+                    deviceslist[deviceid] = new Object();
+                    deviceslist[deviceid].name = "Yeelight床头灯";//默认名字
+                    deviceslist[deviceid].switch = 2;//默认关灯
+                    deviceslist[deviceid].delay = 2;//延时关灯默认关闭
+                    deviceslist[deviceid].delay_time=15;//默认延时关灯时间
+                    deviceslist[deviceid].light = 50;//亮度默认50
+                    deviceslist[deviceid].state = state;
+                    //deviceslist[deviceid].name_timer=0;
+                    //deviceslist[deviceid].state_timer=0;
+                    //deviceslist[deviceid].delay_timer=0;
+                    deviceslist[deviceid].flag=false; //发送灯状态flag
+                }
+                if (state == 'connected') {
+                    active_device_id = deviceid;
+                    addDevice(deviceid, 1);
+                    //获取状态
+                    queue.push(deviceid);
+                } else if (state == 'disconnected') {
+                    var _data = {"deviceId": deviceid};
+                    setTimeout(function(){
+                        WeixinJSBridge.invoke('connectWXDevice', _data, function (res) {
+                        });
+                    },1000);
+                    addDevice(deviceid, 2);
+                } else if (state == 'connecting') {
+                    addDevice(deviceid, 3);
+                }
+            }
+            //发送消息
+            do_queue_get_stats();
+            device_num = num;
+            //结束加载
+            $(".load").hide();
+            if (device_num == 0) {
+                show_error('并未绑定设备');
+            }
+            if (active_device_id == "") {
+                show_error('附近没有可连接的设备');
+            } else {
+                $('.container').removeClass('hidden');
+                if (device_num > 1) {
+                    //显示灯列表
+                    $("#list-btn").removeClass('hidden');
+                    $("#light-list-modal").modal('show');
+                    $("#list-btn").click(function () {
+                        //alert('1');
+                        $("#light-list-modal").modal('show');
+                    })
+                }
+                if (device_num == 1) {
+                    open_main();
+                }
+            }
+        });
+    }
+    //执行发送消息队列
+    function do_queue_get_stats(){
+        //console.log("do_queue");
+        if(queue[0]===undefined){
+            return true;
+        }
+        var deviceid=queue[0];
+        send_get_state(deviceid);
+        queue.shift();
+    }
+    //打开灯操控主界面,只有已连接才能打开
+    function open_main() {
+        document.title=active_device_name;
+        //showinfo('open_main');
+        //关闭灯列表
+        $("light-list-modal").modal('hide');
+        //打开主界面
+        $('.container').removeClass('hidden');
+        $(".container").show();
+        //打开控制按钮
+        $("nav").show();
+        //开灯状态
+        if (active_device_switch == 1) {
+            //背景
+            $('.back').fadeIn('slow');
+            $('#switch-switch').html('关灯');
+            $('.switch-switch').html('<img src="image/开关灯.png" class="img-responsive center" alt="" onclick="switchSwitchOff();" >');
+            $("#change-light").fadeIn();
+            $("#change-light-knop").fadeIn();
+            $(".light-text").fadeIn();
+            //延时
+            if (active_device_delay == 1) {
+                $("#switch-delay").html('<img src="image/延时选中.png" class="img-responsive center" alt=""  onclick="switchTimingOff();">');
+            } else {
+                $("#switch-delay").html('<img src="image/延时.png" class="img-responsive center" alt="" onclick="switchTimingOn();" >');
+            }
+        } else {
+            //关灯状态
+            //背景
+            $('.back').fadeOut('slow');
+            $('#switch-switch').html('开灯');
+            $('.switch-switch').html('<img src="image/开关灯.png" class="img-responsive center" alt="" onclick="switchSwitchOn();" >');
+            $("#switch-delay").html('<img src="image/延时不可点.png" class="img-responsive center" alt="" >');
+            $(".light-text").fadeOut();
+            $("#change-light-knop").hide();
+            $("#small_circle_div").fadeOut();
+        }
+        $("#switch-data").html('<img src="image/数据.png" class="img-responsive center" alt="" onclick="getchart();" >');
+        //亮度滑动条
+        $("#change-light").knob({
+            'release': function (v) {
+                changelight(v);
+                draw(v);
+            }
+            , 'change': function (v) {
+                draw(v);
+            }
+            ,width:Math.round(_width*0.7)
+            ,height:Math.round(_width*0.7)
+        });
+        if (active_device_switch == 1) {
+            //非默认亮度调节滑动条
+            $("#change-light").val(active_device_light).trigger('change');
+            draw(active_device_light);
+        }
+    }
+    //获取数据
+    function getchart(){
+        //var url=get_chart_url + '&d_id=' + active_device_id;
+        var url='http://weixin-yeelink.mi-ae.com.cn/index.php?s=Home/index/get_chart_json&d_id=' + active_device_id+'&callback=?';
+        $("#switch-data").html('<img src="image/数据不可点.png" class="img-responsive center" alt="">');
+        $.getJSON(url, function(data){
+            if(data.code==0){
+                alert('暂时没有您的数据!');
+                return;
+            }
+            require(
+                    [
+                        'echarts',
+                        'echarts/chart/pie'
+                    ],
+                    function (ec) {
+                        var color_chart = ec.init(document.getElementById('color_type'));
+                        var color_option = {
+                            title : {
+                                text: '色彩使用比例',
+                                x:'center'
+                            },
+                            tooltip : {
+                                trigger: 'item',
+                                formatter: "{a} <br/>{b} : {d}%"
+                            },
+                            color:['#ff0000','#ffff00','#00ff00','#00ffff','#0000ff','#ff00ff'],
+
+                            series : [
+                                {
+                                    name:'颜色',
+                                    type:'pie',
+                                    radius : '55%',
+                                    center: ['50%', '60%'],
+                                    data:[
+                                        {value:data.cm_c1_time+1, name:'红色'},
+                                        {value:data.cm_c2_time+1, name:'黄色'},
+                                        {value:data.cm_c3_time+1, name:'绿色'},
+                                        {value:data.cm_c4_time+1, name:'蓝绿色'},
+                                        {value:data.cm_c5_time+1, name:'蓝色'},
+                                        {value:data.cm_c6_time+1, name:'紫色'}
+                                    ]
+                                }
+                            ]
+                        };
+                        color_chart.setOption(color_option);
+                        var temp_chart = ec.init(document.getElementById('color_temp'));
+                        var temp_option = {
+                            title : {
+                                text: '色温使用比例',
+                                x:'center'
+                            },
+                            tooltip : {
+                                trigger: 'item',
+                                formatter: "{a} <br/>{b} : {d}%"
+                            },
+
+
+                            series : [
+                                {
+                                    name:'色温',
+                                    type:'pie',
+                                    radius : '55%',
+                                    center: ['50%', '60%'],
+                                    data:[
+                                        {value:data.ct_t1_time+1, name:'暖白'},
+                                        {value:data.ct_t2_time+1, name:'白色'},
+                                        {value:data.ct_t3_time+1, name:'冷白'},
+                                        {value:data.ct_t4_time+1, name:'冷色'},
+
+                                    ]
+                                }
+                            ]
+                        };
+                        temp_chart.setOption(temp_option);
+                        var model_chart = ec.init(document.getElementById('model'));
+                        var model_option = {
+                            title : {
+                                text: '模式使用比例',
+                                x:'center'
+                            },
+                            tooltip : {
+                                trigger: 'item',
+                                formatter: "{a} <br/>{b} : {d}%"
+                            },
+
+
+                            series : [
+                                {
+                                    name:'模式',
+                                    type:'pie',
+                                    radius : '55%',
+                                    center: ['50%', '60%'],
+                                    data:[
+                                        {value:data.c_m_time+1, name:'色彩'},
+                                        {value:data.ct_m_time+1, name:'日光'},
+                                        {value:data.cf_m_time+1, name:'流光'},
+                                    ]
+                                }
+                            ]
+                        };
+                        model_chart.setOption(model_option);
+                    }
+            );
+        });
+        $(".switch-light").html('<img src="image/亮度.png" class="img-responsive center" alt="" onclick="switchlightshow();" >')
+        $("#chart-view").fadeIn();
+    }
+    //打开亮度调节页面
+    function switchlightshow(){
+        $("#chart-view").fadeOut();
+        $("#switch-data").html('<img src="image/数据.png" class="img-responsive center" alt="" onclick="getchart();" >');
+        $(".switch-light").html('<img src="image/亮度选中.png" class="img-responsive center" alt="" >');
+    }
+    //开灯操作
+    function switchSwitchOn() {
+        $('.switch-switch').html('<img src="image/开关灯.png" class="img-responsive center" alt="">');
+        //开关延时
+        setTimeout(function(){
+            $('.switch-switch').html('<img src="image/开关灯.png" class="img-responsive center" alt="" onclick="switchSwitchOff();" >');
+        },2000);
+        $('.back').fadeIn('slow');
+        $('#switch-switch').html('关灯');
+        $(".light-text").fadeIn();
+        $("#change-light-knop").fadeIn();
+        $("#change-light").fadeIn();
+        $("#small_circle_div").fadeIn();
+        //延时
+        if (active_device_delay == 1) {
+            $("#switch-delay").html('<img src="image/延时选中.png" class="img-responsive center" alt=""  onclick="switchTimingOff();">');
+        } else {
+            $("#switch-delay").html('<img src="image/延时.png" class="img-responsive center" alt="" onclick="switchTimingOn();" >');
+        }
+        $("#change-light").val(active_device_light).trigger('change');
+        draw(active_device_light);
+        poweron();
+    }
+    //关灯操作
+    function switchSwitchOff() {
+        active_device_delay = 0;
+        $('.switch-switch').html('<img src="image/开关灯.png" class="img-responsive center" alt="" >');
+        setTimeout(function(){
+            $('.switch-switch').html('<img src="image/开关灯.png" class="img-responsive center" alt="" onclick="switchSwitchOn();" >');
+        },2000);
+        $(".light-text").fadeOut();
+        $('.back').fadeOut('slow');
+        $("#change-light-knop").fadeOut();
+        $('#switch-switch').html('开灯');
+        $("#switch-delay").html('<img src="image/延时不可点.png" class="img-responsive center" alt="" >');
+        $("#small_circle_div").fadeOut();
+        poweroff();
+    }
+    //打开延时关灯操作
+    function switchTimingOn() {
+        switchlightshow();
+        timingon();
+        $(".delay-text").html(active_device_delay_time+'分钟后关灯');
+        $("#switch-delay").html('<img src="image/延时选中.png" class="img-responsive center" alt=""  onclick="switchTimingOff();">');
+        $(".delay-text").removeClass('hidden');
+        $(".delay-text").show();
+        setTimeout(function () {
+            $(".delay-text").hide();
+        }, 5000);
+    }
+    //关闭延时关灯操作
+    function switchTimingOff() {
+        switchlightshow();
+        timingoff();
+        $(".delay-text").hide();
+        $("#switch-delay").html('<img src="image/延时.png" class="img-responsive center" alt=""  onclick="switchTimingOn();">');
+    }
+
+    //获取灯状态
+    function send_get_state(device_id) {
+        //console.log("send_get_state",device_id);
+        deviceslist[device_id].flag=true;
+        deviceslist[device_id].state_timer=1;
+        var buf = base64_encode('getstatus');
+        sendDataToWXDevice(device_id, buf);
+    }
+    //获取延时关灯指令
+    function send_get_timing(device_id) {
+        //console.log("send_get_timing",device_id);
+        deviceslist[device_id].timing_timer=1;
+        var buf = base64_encode('gettiming');
+        sendDataToWXDevice(device_id, buf);
+    }
+    //打开延时关灯指令
+    function timingon() {
+        var device_id = active_device_id;
+        active_device_delay=1;
+        deviceslist[device_id].delay=1;
+        var buf = base64_encode('timing:on');
+        sendDataToWXDevice(device_id, buf);
+    }
+    //关闭延时关灯指令
+    function timingoff() {
+        var device_id = active_device_id;
+        active_device_delay=0;
+        deviceslist[device_id].delay=0;
+        var buf = base64_encode('timing:off');
+        sendDataToWXDevice(device_id, buf);
+    }
+    function show_error(info) {
+        switchlightshow();
+        $("#load-text").html(info);
+        $(".container").hide();
+        $(".back").hide();
+        $("#chart-view").fadeOut();
+        $('body').css('background-image', 'url("../image/xiongkong.png")');
+        $(".load .line-scale-party").hide();
+        $(".load").show();
+    }
+    function stringToHex(str) {
+        var val = "";
+        for (var i = 0; i < str.length; i++) {
+            if (val == "")
+                val = str.charCodeAt(i).toString(16);
+            else
+                val += "," + str.charCodeAt(i).toString(16);
+        }
+        return val;
+    }
+    //处理收到灯名字指令
+    function  do_order_name(device_id, data) {
+        if(deviceslist[device_id].name_timer !=1){
+            return;
+        }
+        var name = '';
+        var len = parseInt(data[2], 16) + 3;
+        for (var i = 3; i < len; i++) {
+            name += data[i];
+        }
+        var pre = prePro(name);
+        //最终数据
+        var str = decodeURIComponent(pre);
+        //console.log("do_get_name",str+"--"+device_id);
+        if (data[1] === '1') {
+            var old_name = get_name(device_id);
+            str += old_name;
+        }
+        set_name(device_id, str);
+        if (parseInt(data[2], 16) < 13 || data[1] === '1') {
+            //已经获得完整名字
+            deviceslist[device_id].name_timer=0;
+            $("#" + device_id).html(deviceslist[device_id].name);
+            if(device_id==active_device_id){
+                active_device_name=str;
+                document.title=str;
+            }
+        }
+        do_queue_get_stats();
+    }
+    function prePro(data)
+    {
+        if (data.length % 2)
+            return '';
+        var tmp = '';
+        for (i = 0; i < data.length; i += 2)
+        {
+            tmp += '%' + data.charAt(i) + data.charAt(i + 1);
+        }
+        return tmp;
+    }
+    //开灯指令
+    function poweron() {
+        //showinfo('click poweron');
+        var device_id = active_device_id;
+        active_device_switch=1;
+        deviceslist[device_id].switch=1;
+        //showinfo(device_id);
+        var buf = 'cG93ZXJvbg==';
+        sendDataToWXDevice(device_id, buf);
+    }
+    //关灯指令
+    function poweroff() {
+        //showinfo('poweroff');
+        var device_id = active_device_id;
+        active_device_switch=0;
+        deviceslist[device_id].switch=0;
+        //showinfo(device_id);
+        var buf = 'cG93ZXJvZmY=';
+        sendDataToWXDevice(device_id, buf);
+    }
+    //获取名字指令
+    function send_get_name(device_id) {
+        //console.log("send_get_name",device_id);
+        deviceslist[device_id].name_timer=1;
+        var buf = base64_encode('getname');
+        sendDataToWXDevice(device_id, buf);
+    }
+    //连接指令
+    function connect() {
+        //showinfo('connect');
+        var device_id = active_device_id;
+        //showinfo(device_id);
+        var _data = {"deviceId": device_id};
+        WeixinJSBridge.invoke('connectWXDevice', _data, function (res) {
+            //showinfo(res.err_msg);
+        });
+    }
+    //断开连接指令
+    function disconnect() {
+        //showinfo('disconnect');
+        var device_id = active_device_id;
+        //showinfo(device_id);
+        var _data = {"deviceId": device_id};
+        WeixinJSBridge.invoke('disconnectWXDevice', _data, function (res) {
+            //showinfo(res.err_msg);
+        });
+    }
+    //调节亮度指令
+    function changelight(v) {
+        if(v==active_device_light){
+            return;
+        }
+        var device_id = active_device_id;
+        active_device_light = v;
+        deviceslist[device_id].light = v;
+        //showinfo(device_id);
+        var light = 'brightness:' + v + ',';
+        //showinfo(light);
+        var buf = base64_encode(light);
+        //showinfo(buf);
+        sendDataToWXDevice(device_id, buf);
+    }
+    //展示debug信息
+    function showinfo(content) {
+        //$(".delay-text").html(content);
+        alert(content);
+    }
+    function get_name(deviceid) {
+        if (deviceslist[deviceid].name.length > 0) {
+            return deviceslist[deviceid].name;
+        } else {
+            return "Yeelight床头灯";
+        }
+    }
+    //设备列表添加设备
+    function addDevice(device_id, state) {
+        var className = '';
+        //已连接
+        if (state === 1) {
+            var span = '<span class="label label-success" style="font-size: 90%;padding-bottom: 0.1em;padding-top: 0.2em;">已连接</span>';
+            className = 'onclick="show_device(this);"';
+        }
+        //未连接
+        if (state === 2) {
+            var span = '<span class="label label-default">未连接</span>';
+        }
+        //正在连接
+        if (state === 3) {
+            var span = '<span class="label label-default" >正在连接</span>';
+        }
+        //获取设备名字
+        var device_name = get_name(device_id);
+        var html = '<h5><div>' +
+                '<span id="' + device_id + '">' + device_name + '</span>' +
+                '&nbsp' + span + '' +
+                '</div></h5>';
+        html=   '<div ' + className + ' class="row device_list_row" value="' + device_id + '">' +
+                '<div class="col-xs-10"> ' + html+ '</div> ' +
+                '   <div class="col-xs-2"><img src="image/选圈.png"  class="img-responsive"></div> ' +
+                '</div><hr>';
+        $('#devices_list').append(html);
+        return;
+    }
+    /*
+     * 设置设备名字
+     */
+    function set_name(device_id, name) {
+        if(name.length < 1){
+            name='Yeelight床头灯';
+        }
+        if (typeof (deviceslist[device_id]) === "undefined") {
+            deviceslist[device_id] = new Object();
+        }
+        deviceslist[device_id].name = name;
+    }
+    //发送数据
+    function sendDataToWXDevice(deviceId, buf) {
+        var _data = {"deviceId": deviceId, "base64Data": buf};
+        WeixinJSBridge.invoke('sendDataToWXDevice', _data, function (res) {
+            var str='send:'+base64_decode(buf)+res.err_msg;
+            //console.log("senddatato:",res.err_msg+deviceId);
+        });
+    }
+    //显示灯细节
+    function show_device(obj) {
+        //去掉之前的选中标识
+        $("#"+active_device_id).parents(".device_list_row").find(".col-xs-2").html('<img src="image/选圈.png"  class="img-responsive">');
+        var device_id = $(obj).attr('value');
+        active_device_id = device_id;
+        active_device_light=deviceslist[device_id].light;
+        active_device_delay=deviceslist[device_id].delay;
+        active_device_switch=deviceslist[device_id].switch;
+        active_device_delay_time=deviceslist[device_id].delay_time;
+        active_device_name=deviceslist[device_id].name;
+        $("#light-list-modal").modal('hide');
+        $(obj).find(".col-xs-2").html('<img src="image/已选.png"  class="img-responsive">');
+        open_main();
+    }
+    function draw(v) {
+        $("#small_circle_div").show();
+        //半径偏移
+        var r_offset = -2;
+        //原来的圆
+        var old = new Object();
+        //画板
+        old.X = $('#change-light-knop canvas').offset().left;
+        old.Y = $('#change-light-knop canvas').offset().top;
+        old.height = $('#change-light-knop canvas').height();
+        old.width = $('#change-light-knop canvas').width();
+        //圆心坐标
+        old.y = old.height / 2;
+        old.x = old.width / 2;
+        //半径
+        old.r = $('#change-light-knop canvas').height() / 2;
+        //圆心位置偏移度数
+        //$("#small_circle_div").html('');
+        var du = (v * 2.5 + 55) * (-1);
+        //弧度
+        var arc = du * Math.PI / 180;
+        var n = new Object();
+        //圆心坐标
+        n.x = Math.sin(arc) * (old.r + r_offset) + old.x + old.X-10;
+        n.y = Math.cos(arc) * (old.r + r_offset) + old.y + old.Y-10;
+        n.r = 13;
+        $("#small_circle_div").css('top', n.y);
+        $("#small_circle_div").css('left', n.x);
+    }
+    //多等列表模态框
+    $("#list-btn").click(function () {
+        $("#light-list-modal").modal('show');
+    })
+</script>
+</body>
+</html>

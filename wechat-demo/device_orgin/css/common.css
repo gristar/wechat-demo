@@ -1,0 +1,171 @@
+body{
+	background-image: url('../image/iot/xiongkong.png');
+	background-size: 100%;
+	font-family: '微软雅黑';
+    height:100%;
+    overflow:hidden;
+}
+.back{
+    
+    position: absolute;
+    z-index: -2;
+    display: none;
+}
+/*多灯按钮*/
+.list-menu{
+	
+        margin-top: 10px;
+        margin-right: 10px;
+        position: absolute;
+        z-index: 10;
+        //display: none;
+}
+
+.center{
+	text-align: center;
+}
+.center-block {
+	margin-top: 100px;
+ 	text-align: center;
+}
+.light-text{
+	color:rgb(255,255,255);
+	font-size: 17px;
+	margin-top: -30px;
+        display: none;
+}
+.delay-text{
+	color:rgb(255,255,255);
+	font-size: 17px;
+	filter:alpha(opacity=20);
+	
+	
+}
+.control-panel{
+	background-color: #ffffff;
+	font-size: 10px;
+    padding-right: 30px;
+	padding-left: 30px;
+	padding-top: 30px;
+	padding-bottom: 30px;
+}
+.navbar-default{
+	background-color: #ffffff;
+	border-color: #ffffff;
+}
+.modal-dialog{
+	margin:0;
+}
+.modal-header{
+	border-bottom:0; 
+	padding-top: 20px;
+	padding-bottom: 0px;
+}
+.modal-content{
+	background-color: rgba(60,60,60,0.7);
+	border-radius: 0;
+	padding-left: 15px;
+	padding-right: 15px;
+    color: #FFFFFF;
+    border: 0px;
+}
+hr{
+	border-top-color: rgba(255,255,255,0.4);
+    margin-top: 10px;
+    margin-bottom: 10px;
+}
+
+
+.load{
+  text-align: center;
+  margin-top: 300px;
+  color:white;
+}
+
+#small_circle_div{
+    position: absolute;
+    left:0px;
+    top:0px;
+    z-index:-1;
+    border-radius: 50%;
+    width: 20px;
+    height: 20px;
+    background-color: white;
+    display:none;
+}
+#change-light{
+    display: none;
+}
+.modal-backdrop.in{
+    opacity: 0.8;
+}
+#devices_list img{
+    margin-left: 2px;
+}
+#devices_list .label{
+    font-size: 90%;
+    padding-bottom: 0.1em;
+    padding-top: 0.2em;
+}
+/*加载*/
+@-webkit-keyframes line-scale-party {
+  0% {
+    -webkit-transform: scale(1);
+            transform: scale(1); }
+
+  50% {
+    -webkit-transform: scale(0.5);
+            transform: scale(0.5); }
+
+  100% {
+    -webkit-transform: scale(1);
+            transform: scale(1); } }
+
+@keyframes line-scale-party {
+  0% {
+    -webkit-transform: scale(1);
+            transform: scale(1); }
+
+  50% {
+    -webkit-transform: scale(0.5);
+            transform: scale(0.5); }
+
+  100% {
+    -webkit-transform: scale(1);
+            transform: scale(1); } }
+
+.line-scale-party > div:nth-child(1) {
+  -webkit-animation-delay: 0.77s;
+          animation-delay: 0.77s;
+  -webkit-animation-duration: 1.26s;
+          animation-duration: 1.26s; }
+.line-scale-party > div:nth-child(2) {
+  -webkit-animation-delay: 0.29s;
+          animation-delay: 0.29s;
+  -webkit-animation-duration: 0.43s;
+          animation-duration: 0.43s; }
+.line-scale-party > div:nth-child(3) {
+  -webkit-animation-delay: 0.28s;
+          animation-delay: 0.28s;
+  -webkit-animation-duration: 1.01s;
+          animation-duration: 1.01s; }
+.line-scale-party > div:nth-child(4) {
+  -webkit-animation-delay: 0.74s;
+          animation-delay: 0.74s;
+  -webkit-animation-duration: 0.73s;
+          animation-duration: 0.73s; }
+.line-scale-party > div {
+  background-color: #fff;
+  width: 4px;
+  height: 35px;
+  border-radius: 2px;
+  margin: 2px;
+  -webkit-animation-fill-mode: both;
+          animation-fill-mode: both;
+  display: inline-block;
+  -webkit-animation-name: line-scale-party;
+          animation-name: line-scale-party;
+  -webkit-animation-iteration-count: infinite;
+          animation-iteration-count: infinite;
+  -webkit-animation-delay: 0;
+          animation-delay: 0; }

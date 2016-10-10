@@ -1,0 +1,18 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<meta charset="UTF-8">
+		<title></title>
+	</head>
+	<body>
+		test1
+		<input type="radio" value="88" id="test" />
+		<button onclick="ok()">确定</button>
+		<script>
+			function ok(){
+				window.opener.document.getElementById("demo").value = "88";
+				window.close();
+			}
+		</script>
+	</body>
+</html>
