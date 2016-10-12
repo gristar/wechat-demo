@@ -45,15 +45,9 @@
 		<div class="weui_cells weui_cells_form">
 			<form action="javascript:;" id="formData">
 				<div class="weui_cell">
-					<div class="weui_cell_hd"><label class="weui_label">文本</label></div>
+					<div class="weui_cell_hd"><label class="weui_label">数据</label></div>
 					<div class="weui_cell_bd weui_cell_primary">
-						<input class="weui_input" name="text" type="text" placeholder="请输入任意数据">
-					</div>
-				</div>
-				<div class="weui_cell">
-					<div class="weui_cell_hd"><label class="weui_label">数字</label></div>
-					<div class="weui_cell_bd weui_cell_primary">
-						<input class="weui_input" name="number" type="number" pattern="[0-9]*" placeholder="请输入数字">
+						<input class="weui_input" name="text" id="base64data" type="text" placeholder="请输入任意数据">
 					</div>
 				</div>
 			</form>
@@ -230,14 +224,10 @@
 					$("#history").append("无设备，请先绑定设备</br>");
 					return false;
 				}
-				var data = "";
-				$("form#formData input").each(function(i,v){
-					var str = $(this).prop("name")+"="+$(this).val() + "&";
-					data += str;
-				})
-				var base64Data = $.base64.btoa(data.slice(0,-1));
+				var data = $("#base64data").val();
+				var base64Data = $.base64.btoa(data);
 //				alert("发送数据中,data:" + base64Data + "，deviceId:" + deviceId);
-				$("#history").append("发送数据中,base64Data:" + base64Data + "，deviceId:" + deviceId + "</br>");
+				$("#history").append("发送数据中,原始数据："+ data +"，base64Data:" + base64Data + "，deviceId:" + deviceId + "</br>");
 				sendDataToWXDevice(deviceId,base64Data);
 			})
 			$("#sendDateNo").on("click",function(){
@@ -281,6 +271,7 @@
 		        WeixinJSBridge.invoke('sendDataToWXDevice', _data, function (res) {
 		            var str='send:'+buf+res.err_msg;
 		            console.log(str);
+		            $("#history").append("数据发送结果："+res.err_msg+"</br>");
 		        });
 		    }
 		</script>
