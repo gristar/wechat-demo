@@ -6,7 +6,7 @@ function getSignature(){
 		data:{url:location.href.split("#")[0]},
 		dataType:"json",
 		success:function(rst){
-			console.log(rst);
+			console.log(rst, "rst");
 			if(rst.content.ret == 1){
 				signature = rst.content.content;
 			}
